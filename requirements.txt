@@ -1,0 +1,4 @@
+pylint==2.5.2
+pyserial==3.4
+PyYAML==5.3.1
+sanic==19.12.2
