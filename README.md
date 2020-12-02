@@ -23,7 +23,7 @@ configuration file is described afterwards. A sample configuration file is provi
 
 ### Unit configuration
 
-A unit defines how to is defined by a configuration section looking as follows:
+A unit defines which values are allowed for a parameter. A unit is defined by a configuration section looking as follows:
 ```yaml
 type: <builtin_unit_type>
 unit_param_1: <value>
@@ -51,7 +51,8 @@ unit_param_2: <value>
 
 
 ### Encoding configuration
-An encoding is defined by a configuration section looking as follows:
+An encoding defines the actual bitwise representation of a value stored in a heating
+control device. It is defined by a configuration section looking as follows:
 ```yaml
 type: <builtin_encoding_type>
 encoding_param_1: <value>
@@ -62,7 +63,9 @@ encoding_param_2: <value>
 - `float` Encodes a decimal number
   - Parameters:
     - `size`: size of a value using this encoding in bytes
-    - `factor`: integral number by which the value is divided after retrieving from the heating control
+    - `factor`: integral number by which the value is divided after retrieving from the heating
+      control. E.g. a factor of 10 using a size of 2 bytes would encode the value 13.3 as `0x8500`,
+      which is the Big Endian representation of the value 133.
 - `int` Encodes an integral number
   - Parameters:
     - `size`: size in bytes
@@ -249,7 +252,7 @@ Show the control program for `program_id`.
           {"on": "06:00", "off": "08:00"}
         ]
       },
-      ...
+      "remaining days follow here..."
     ]
   }
   ```
@@ -357,7 +360,7 @@ Gets a list of all parameters defined for the heating control unit.
         "suffix": "°C"
       }
     },
-    ...
+    "remaining parameters follow here..."
   ]
   ```
 
