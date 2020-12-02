@@ -30,9 +30,7 @@ class Api:
     def get_blueprint(self):
         if not self.blueprint:
             self.blueprint = Blueprint.group(
-                self.auth_blueprint,
-                *[it.get_blueprint() for it in self._api_parts],
-                url_prefix="/api"
+                self.auth_blueprint, *[it.get_blueprint() for it in self._api_parts]
             )
         return self.blueprint
 
