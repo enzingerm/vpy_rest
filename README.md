@@ -16,7 +16,10 @@ Structure of this README:
 - Then start the application by running `python run.py`
 
 ## Configuration
-By default, a file called `config.yaml` is expected in the program directory. The basic building blocks of the configuration file are unit configuration sections, encoding configuration sections and parameter configuration sections. These are described in detail below and then the structure of the complete configuration file is described afterwards.
+By default, a file called `config.yaml` is expected in the program directory. The basic building blocks of the
+configuration file are unit configuration sections, encoding configuration sections and parameter
+configuration sections. These are described in detail below and then the structure of the complete
+configuration file is described afterwards. A sample configuration file is provided as `config.sample.yaml`.
 
 ### Unit configuration
 
@@ -80,7 +83,7 @@ readonly: true if the parameter shouldn't be writable
 ```
 
 ### Complete configuration
-The complete configuration file might look like this (default values are given, if possible):
+The complete configuration file might look like this (default values are given, if applicable):
 
 *config.yaml*
 ```yaml

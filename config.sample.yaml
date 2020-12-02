@@ -1,0 +1,307 @@
+# sample configuration file for a Vitotronic V200KW2
+---
+_units:
+  - water_temp: &water_temp
+      type: number
+      min: 1
+      max: 100
+      integer: false
+      suffix: °C
+  - room_nominal_temp: &room_nominal_temp
+      type: number
+      min: 3
+      max: 37
+      integer: true
+      suffix: °C
+  - control_program: &control_program
+      type: array
+      length: 7
+      child:
+        type: control_program_day
+
+_encodings:
+  - float_2byte_div10: &float_2byte_div10
+      type: float
+      size: 2
+      factor: 10
+  - control_program_encoding: &control_program_enc
+      type: array
+      length: 7
+      child:
+        type: control_program_day
+  - operating_status: &operating_status_enc
+      type: int
+      size: 1
+  - nominal_temp: &nominal_temp_enc
+      type: int
+      size: 1
+
+_parameters:
+  - &cpr_a1
+    id: control_program_circuit_a1
+    name: Control program circuit A1
+    unit: *control_program
+    readonly: false
+  - &cpr_m2
+    id: control_program_circuit_m2
+    name: Control program circuit M2
+    unit: *control_program
+    readonly: false
+  - &cpr_water
+    id: control_program_hotwater
+    name: Control program hotwater
+    unit: *control_program
+    readonly: false
+  - &t_outside
+    id: temp_outside
+    name: Outside temperature
+    unit:
+      type: number
+      min: -30
+      max: 50
+      integer: false
+      suffix: °C
+    readonly: true
+  - &t_outside_dampened
+    id: temp_outside_dampened
+    name: Outside temperature dampened
+    unit:
+      type: number
+      min: -30
+      max: 50
+      integer: false
+      suffix: °C
+    readonly: true
+  - &s_burner
+    id: status_burner
+    name: Burner status
+    unit: { type: operating_status }
+    readonly: true
+  - &s_circpump
+    id: status_circulation_pump
+    name: Circulation pump status
+    unit: { type: operating_status }
+    readonly: true
+  - &t_boiler
+    id: temp_boiler
+    name: Boiler temperature
+    unit: *water_temp
+    readonly: true
+  - &t_water
+    id: temp_hotwater
+    name: Hotwater temperature
+    unit: *water_temp
+    readonly: true
+  - &t_heating
+    id: temp_heating_supply
+    name: Heating supply temperature
+    unit: *water_temp
+    readonly: true
+  - &s_hpump
+    id: status_heating_pump
+    name: Heating pump status (M2)
+    unit: { type: operating_status }
+    readonly: true
+  - &burner_starts
+    id: burner_starts
+    name: Burner starts
+    unit:
+      type: number
+      min: 0
+      integer: true
+    readonly: true
+  - &burner_hours
+    id: burner_hours
+    name: Brennerstunden
+    unit: { type: hour }
+    readonly: true
+  - &s_chargepump
+    id: status_charging_pump
+    name: Loading pump status
+    unit: { type: operating_status }
+    readonly: true
+  - &t_n_red_a1
+    id: nominal_temp_red_a1
+    name: Nominal room temperature A1 reduced
+    unit: *room_nominal_temp
+    readonly: false
+  - &t_n_red_m2
+    id: nominal_temp_red_m2
+    name: Nominal room temperature M2 reduced
+    unit: *room_nominal_temp
+    readonly: false
+  - &t_n_a1
+    id: nominal_temp_a1
+    name: Nominal room temperature A1
+    unit: *room_nominal_temp
+    readonly: false
+  - &t_n_m2
+    id: nominal_temp_m2
+    name: Nominal room temperature M2
+    unit: *room_nominal_temp
+    readonly: false
+  - &t_n_party_a1
+    id: nominal_temp_a1_party
+    name: Nominal room temperature A1 party
+    unit: *room_nominal_temp
+    readonly: false
+  - &t_n_party_m2
+    id: nominal_temp_m2_party
+    name: Nominal room temperature M2 party
+    unit: *room_nominal_temp
+    readonly: false
+  - &s_party_a1
+    id: status_party_a1
+    name: Status party mode A1
+    unit: { type: operating_status }
+    readonly: false
+  - &s_party_m2
+    id: status_party_m2
+    name: Status party mode M2
+    unit: { type: operating_status }
+    readonly: false
+  - &t_n_water
+    id: nominal_temp_hotwater
+    name: Nominal temperature hotwater
+    unit:
+      type: number
+      min: 1
+      max: 95
+      integer: true
+      suffix: C
+    readonly: false
+  - &t_n_boiler
+    id: nominal_temp_boiler
+    name: Nominal temperature boiler
+    unit:
+      type: number
+      min: 5
+      max: 100
+      suffix: C
+    readonly: true
+  - &systime
+    id: system_time
+    name: System time
+    unit: { type: system_time }
+    readonly: false
+
+device: &heating_device
+  name: V200KW2
+  type: serial
+  ## for testing purposes, an emulated "dummy" heating control device can be used
+  # type: dummy
+  protocol: KW
+  serial_device: /dev/ttyUSB0
+  parameters:
+    - param: *t_outside
+      encoding: *float_2byte_div10
+      address: 0x0800
+    - param: *t_outside_dampened
+      encoding: *float_2byte_div10
+      address: 0x5527
+    - param: *cpr_water
+      encoding: *control_program_enc
+      address: 0x2100
+    - param: *cpr_a1
+      encoding: *control_program_enc
+      address: 0x2000
+    - param: *cpr_m2
+      encoding: *control_program_enc
+      address: 0x3000
+    - param: *s_burner
+      encoding: *operating_status_enc
+      address: 0x551E
+    - param: *s_circpump
+      encoding: *operating_status_enc
+      address: 0x0846
+    - param: *t_boiler
+      encoding: *float_2byte_div10
+      address: 0x0802
+    - param: *t_water
+      encoding: *float_2byte_div10
+      address: 0x0804
+    - param: *t_heating
+      encoding: *float_2byte_div10
+      address: 0x080C
+    - param: *s_hpump
+      encoding: *operating_status_enc
+      address: 0x3906
+    - param: *burner_starts
+      encoding:
+        type: int
+        size: 2
+      address: 0x088A
+    - param: *burner_hours
+      encoding:
+        type: float
+        size: 4
+        factor: 3600
+      address: 0x08A7
+    - param: *s_chargepump
+      encoding: *operating_status_enc
+      address: 0x0845
+    - param: *t_n_red_a1
+      encoding: *nominal_temp_enc
+      address: 0x2307
+    - param: *t_n_red_m2
+      encoding: *nominal_temp_enc
+      address: 0x3307
+    - param: *t_n_a1
+      encoding: *nominal_temp_enc
+      address: 0x2306
+    - param: *t_n_m2
+      encoding: *nominal_temp_enc
+      address: 0x3306
+    - param: *t_n_party_a1
+      encoding: *nominal_temp_enc
+      address: 0x2308
+    - param: *t_n_party_m2
+      encoding: *nominal_temp_enc
+      address: 0x3308
+    - param: *s_party_a1
+      encoding: *operating_status_enc
+      address: 0x2303
+    - param: *s_party_m2
+      encoding: *operating_status_enc
+      address: 0x3303
+    - param: *t_n_water
+      encoding: *nominal_temp_enc
+      address: 0x6300
+    - param: *t_n_boiler
+      encoding: *float_2byte_div10
+      address: 0x5502
+    - param: *systime
+      encoding: { type: system_time }
+      address: 0x088E
+
+config:
+  server:
+    ip: 127.0.0.1
+    port: 8000
+  device: *heating_device
+  api:
+    highlevel:
+      hotwater_program_param: *cpr_water
+    auth:
+      ## for testing or if no authentication is needed, you an use the following line
+      # provider: none
+      provider: token
+
+      ## users have to re-login after a specified time
+      token_validity_days: 90
+      backend:
+        ## Kerberos backend, needs `pip install kerberos`
+        # type: kerberos
+        # allowed_users: [ john, robert ]
+        # realm: "dom.internal"
+
+        ## dummy backend, accepts all users and all passwords
+        # type: dummy
+
+        ## list backend: credentials given in config
+        type: list
+        users:
+          - username: john
+            password: secret
+          - username: robert
+            password: very_secret
