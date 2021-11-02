@@ -395,9 +395,11 @@ Read the value of a parameter.
 Set the value of a parameter.
 - (Exemplary) request payload: set the nominal room temperature to 23 degree Celsius
   ```json
-  23
+  {
+    "value": 23
+  }
   ```
-The request payload only contains the value of the parameter.
+The request payload contains the value of the parameter in the 'value' key of a JSON object.
 ***
 <a name="parameters_param_reload"></a>
 
