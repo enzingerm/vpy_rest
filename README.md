@@ -174,6 +174,9 @@ Completely JSON oriented. Parameters are expected to be given in `application/js
 - [GET `/programs/<program_id>/day/<day_id>`](#programs_day) Get control program for specific day
 - [GET `/programs/<program_id>/day/<day_id>/reload`](#programs_day_reload) Reload specific day
 - [POST `/programs/<program_id>/day/<day_id>`](#post_programs_day) Change control program for a specific day
+- [GET `/programs/<program_id>/party_mode`](#party_mode_status) Get information about possibly activated party mode
+- [POST `/programs/<program_id>/party_mode/enable`](#party_mode_enable) Enable party mode for the current day
+- [POST `/programs/<program_id>/party_mode/disable`](#party_mode_disable) Disable party mode
 ### Parameters
 - [GET `/parameters`](#parameters) Get an overview over defined parameters
 - [GET `/parameters/<parameter_id>`](#parameters_param) Get a specific parameter's value
@@ -302,6 +305,47 @@ Sets the control program for the given day.
   ```
   The request contains an array up to 4 shifting intervals (defined by `on/off`) which have
   to be ordered chronologically and also may not overlap.
+
+- Response (on success):
+  ```json
+  {"success": true}
+  ```
+
+***
+<a name="party_mode_status"></a>
+
+### **GET** `/programs/<program_id>/party_mode`
+Get information about the possibly activated party mode (temporary shifting program)
+- Response:
+  ```json
+  {
+    "active": true,
+    "activeUntil": "2020-11-28T19:50:00", // only when active == true
+  }
+  ```
+
+***
+<a name="party_mode_enable"></a>
+
+### **POST** `/programs/<program_id>/party_mode/enable`
+Enables the party mode (temporary shifting program) for the current day until a specific time.
+- Request payload (temporarily enable current program until 22:00):
+  ```json
+  {
+    "until": "2021-11-02T22:00:00" // day must be the current day, otherwise the call fails
+  }
+  ```
+
+- Response (on success):
+  ```json
+  {"success": true}
+  ```
+
+***
+<a name="party_mode_disable"></a>
+
+### **POST** `/programs/<program_id>/party_mode/disable`
+Disables the temporary shifting program and rolls back to the regular weekly shifting program.
 
 - Response (on success):
   ```json
