@@ -59,6 +59,8 @@ class KWProtocol(Protocol):
                             break
                         else:
                             if fut.done():
+                                # It shouldn't be possible to end up here at all. Still I received some InvalidStateError
+                                # once in a while which suggested that the future was already .done()
                                 print(fut.result())
                                 raise Exception("Future was already done")
                             fut.set_result(cmd.handle_result(val))
