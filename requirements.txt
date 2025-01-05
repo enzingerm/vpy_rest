@@ -1,4 +1,5 @@
 pylint==2.5.2
 pyserial==3.4
 PyYAML==5.3.1
-sanic==19.12.2
+sanic==24.6.0
+pykerberos==1.1.14
