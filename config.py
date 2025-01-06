@@ -22,6 +22,7 @@ from vcontrol_new.encoding import (
     ArrayEncoding,
     FloatEncoding,
     IntEncoding,
+    UIntEncoding,
     SystemTimeEncoding,
     TimerEncoding,
 )
@@ -124,6 +125,11 @@ def get_config(loop, file: str = "config.yaml"):
                                             "int",
                                             {"size": Value()},
                                             mapper=lambda x: IntEncoding(x.size),
+                                        ),
+                                        Option(
+                                            "uint",
+                                            {"size": Value()},
+                                            mapper=lambda x: UIntEncoding(x.size),
                                         ),
                                         Option(
                                             "system_time",

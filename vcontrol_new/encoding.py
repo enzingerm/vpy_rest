@@ -56,6 +56,27 @@ class FloatEncoding(Encoding):
         return self.size
 
 
+class UIntEncoding(Encoding):
+    def __init__(self, size: int):
+        self.size = size
+
+    def deserialize(self, data: bytes) -> int:
+        return int.from_bytes(data, byteorder="little", signed=False)
+
+    def serialize(self, data: Any) -> bytes:
+        self.validate(data)
+        return int(data).to_bytes(length=self.size, byteorder="little")
+
+    def validate(self, data: Any):
+        if not isinstance(data, (int, float)) or not int(data) == data:
+            raise AssertionError("Wrong argument type, integral number expected!")
+        if data < 0:
+            raise AssertionError("Positive number expected!")
+
+    def get_size(self):
+        return self.size
+
+
 class IntEncoding(Encoding):
     def __init__(self, size: int):
         self.size = size
@@ -65,7 +86,7 @@ class IntEncoding(Encoding):
 
     def serialize(self, data: Any) -> bytes:
         self.validate(data)
-        return int(data).to_bytes(length=self.size, byteorder="little")
+        return int(data).to_bytes(length=self.size, byteorder="little", signed=True)
 
     def validate(self, data: Any):
         if not isinstance(data, (int, float)) or not int(data) == data:
