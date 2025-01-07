@@ -66,9 +66,6 @@ class CycleTimeUnit(Unit):
         assert all(
             start < end for start, end in value
         ), "Cycle end time must be after cycle start time"
-        assert all(
-            t1_end <= t2_start for (_, t1_end), (t2_start, _) in zip(value, value[1:])
-        ), "Cycle times must not overlap"
 
 
 class OperatingStatusUnit(Unit):
