@@ -69,6 +69,9 @@ encoding_param_2: <value>
 - `int` Encodes an integral number
   - Parameters:
     - `size`: size in bytes
+- `uint` Encodes an unsigned integral number
+  - Parameters:
+    - `size`: size in bytes
 - `control_program_day` Encodes the switching times for one day
   - no parameters
 - `array` Encodes multiple consecutive values of using a 'child' encoding
@@ -125,6 +128,10 @@ config:
       - param: <parameter_configuration>
         encoding: <encoding_configuration>
         address: <numeric address of the parameter within the heating control>
+        # If a specific byte alignment for the read operation to return sensible data is neccessary,
+        # the address can also be given as <hex address>/<alignment> e.g. 0x084c/8 would
+        # result in a read operation aligned to 8 bytes, that is starting from 0x0848, but the data
+        # would be taken from 0x084c onwards 
       ...
 ```
 
