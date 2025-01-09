@@ -6,6 +6,7 @@ from .protocol import KWProtocol, Protocol
 from collections import namedtuple
 
 ParamMapping = namedtuple("ParamMapping", ["param", "encoding", "address"])
+AddressWithOffset = namedtuple("AddressWithOffset", ["address", "offset"])
 
 
 class ParameterStorage:
@@ -17,7 +18,7 @@ class ParameterStorage:
     def __init__(self):
         self.parameters: Dict[str, Tuple[Parameter, bytes, Encoding]] = dict()
 
-    def add_parameter(self, parameter: Parameter, address: bytes, encoding: Encoding):
+    def add_parameter(self, parameter: Parameter, address: AddressWithOffset, encoding: Encoding):
         if parameter.id in self.parameters:
             raise Exception("Parameter already exists")
         self.parameters[parameter.id] = parameter, address, encoding
@@ -39,17 +40,21 @@ class ParameterStorage:
     def get_child_storage(self, param: Union[str, AggregatedParameter], index: int):
         assert not isinstance(param, str) or not "." in param
         param_id = param if isinstance(param, str) else param.id
-        container_param, container_address, container_encoding = self.parameters[
+        c_param, (c_address, c_offset), c_encoding = self.parameters[
             param_id
         ]
-        if index >= container_param.child_count:
+        if index >= c_param.child_count:
             raise IndexError("Child parameter index out of range!")
-        param = container_param.get_child_param(index)
-        encoding = container_encoding.member_encoding
-        address = (
-            int.from_bytes(container_address, "big", signed=False)
-            + encoding.get_size() * index
-        ).to_bytes(len(container_address), "big", signed=False)
+        param = c_param.get_child_param(index)
+        assert c_offset == 0, "Aligned container addresses not supported for now!"
+        encoding = c_encoding.member_encoding
+        address = AddressWithOffset(
+            (
+                int.from_bytes(c_address, "big", signed=False)
+                + encoding.get_size() * index
+            ).to_bytes(len(c_address), "big", signed=False),
+            0
+        )
         return param, address, encoding
 
 

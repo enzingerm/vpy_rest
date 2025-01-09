@@ -15,6 +15,7 @@ from vcontrol_new import (
     HeatingControl,
     OptolinkConnection,
     ParamMapping,
+    AddressWithOffset,
     ViessmannConnection,
 )
 from vcontrol_new.dummy import HeatingDummy
@@ -34,6 +35,15 @@ from vcontrol_new.unit import (
     OperatingStatusUnit,
     SystemTimeUnit,
 )
+
+def aligned_address(value):
+    if isinstance(value, int):
+        return AddressWithOffset(value.to_bytes(2, byteorder='big'), 0)
+    addr_str, alignment_str = value.split('/')
+    addr, alignment = int(addr_str, 16), int(alignment_str)
+    read_addr, offset = (addr // alignment * alignment, addr % alignment)
+    return AddressWithOffset(read_addr.to_bytes(2, byteorder='big'), offset)
+
 
 param_config = Section(
     {
@@ -159,7 +169,7 @@ def get_config(loop, file: str = "config.yaml"):
                                 propagate_single_value=True,
                             ),
                             "address": Value(
-                                mapper=lambda x: x.to_bytes(2, byteorder="big")
+                                mapper=aligned_address
                             ),
                         },
                         child_mapper=lambda x: ParamMapping(

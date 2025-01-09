@@ -32,9 +32,11 @@ class ViessmannConnection:
 
     async def set_param(self, param: Parameter, value: Any):
         """Set a parameter of the heating control device to a given value"""
-        param, address, encoding = self.device.get_param_storage().get_storage(param)
+        param, (address, offset), encoding = self.device.get_param_storage().get_storage(param)
         if param.is_read_only():
             raise Exception("Readonly parameter cannot be set!")
+        if offset != 0:
+            raise Exception("Parameter with aligned address cannot be set (for now)!")
         encoding.validate(value)
         param.unit.validate(value)
         cmd = self.protocol.create_write_command(address, encoding.serialize(value))
@@ -53,8 +55,8 @@ class ViessmannConnection:
 
     async def read_param(self, param: Parameter) -> ParameterReading:
         """Read a parameter value from the heating control device"""
-        param, address, encoding = self.device.get_param_storage().get_storage(param)
-        cmd = self.protocol.create_read_command(address, encoding.get_size())
+        param, (address, offset), encoding = self.device.get_param_storage().get_storage(param)
+        cmd = self.protocol.create_read_command(address, offset + encoding.get_size())
         now = datetime.now()
         result = await self._execute_command(cmd)
         if not isinstance(result, Data):
@@ -62,7 +64,7 @@ class ViessmannConnection:
         print(
             f"Reading {param.id} took {(datetime.now() - now).total_seconds() * 1000:.0f}ms"
         )
-        val = encoding.deserialize(result.value)
+        val = encoding.deserialize(result.value[offset:])
         param.unit.validate(val)
         return ParameterReading.create_now(param, val)
 
